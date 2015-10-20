@@ -1,0 +1,78 @@
+<!-- Global template that gets rendered on ALL pages -->
+<template name="defaultLayout">
+<div class="wrapper row1">
+  <header id="header" class="clear">
+    <div id="hgroup">
+      <h1><a href="{{ pathFor route='home' }}">Cars</a></h1>
+      <h2>Live action form anywhere</h2>
+    </div>
+    <nav>
+      <ul>
+		{{ #if currentUser }}
+        	<li><a href="#" class="logout">Logout</a></li>
+        	<li><a href="{{ pathFor route='buy_points' }}">Buy points</a></li>
+    	{{ else }}
+    		<li><a href="{{ pathFor route='login' }}">Login</a></li>
+    		<li><a href="{{ pathFor route='register' }}">Register</a></li>
+		{{ /if }}        
+        <li><a href="{{ pathFor route='live' }}">Live</a></li>
+      </ul>
+    </nav>
+  </header>
+</div>
+{{ >yield }}
+<div id="footer__">contact: ucshadow@gmail.com</div>
+</template>
+
+<!-- Homepage template -->
+<template name="home">
+<p>This is home page</p>
+</template>
+
+<!-- Live template where the livestream will be embedded -->
+<template name="live">
+  <div class="stuff_container">
+    <p>Hello from live</p>
+    {{ #if Template.subscriptionsReady }}
+    	<p id="live_greeting_text">Hello {{ user }}, you have <span id="time_left"> {{ live_points }} </span> seconds left</p>
+    {{ else }}
+      <p id="live_greeting_text">Loading data, please wait...</p>
+    {{ /if }}
+    	<button id="time_flow_button">Start</button>
+      <button id="stop_button">Stop</button>
+      <button id="add_100">Add 100</button>
+  </div>
+  <div class="cars_div">
+    <a href="#"><div class="car" id="car1"></div></a>
+    <a href="#"><div class="car" id="car2"></div></a>
+  </div>
+  <div class="video_container"></div>
+</template>
+
+<!-- Login template -->
+<template name="login">
+<h2>Login</h2>
+<form class="login">
+    <p>Email: <input type="email" name="email"></p>
+    <p>Password: <input type="password" name="password"></p>
+    <p><input type="submit" value="Login"></p>
+    <p class="login_error"></p>
+</form>
+</template>
+
+<!-- Register template -->
+<template name="register">
+<p>This is register page</p>
+<form class="register">
+	<p>Username: <input type="username" name="username"></p>
+	<p>Email: <input type="email" name="email"></p>
+	<p>Password: <input type="password" name="password"></p>
+	<p><input type="submit" value="Register"></p>
+</form>
+</template>
+
+<!-- Shop template -->
+<template name="buy_points">
+<p>This is buy page</p>
+</template>
+
