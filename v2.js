@@ -33,15 +33,6 @@ if (Meteor.isClient) {
   Meteor.setTimeout(function(){
   }, 1000);
 
-  var controller;
-  var updater = function(){
-    var current_points = Meteor.user().points;
-    var points_minus_one = current_points - 1;
-    if(current_points >= 1){
-      Meteor.call('update_points_in_db', points_minus_one);
-    }
-  };
-
   Tracker.autorun(function() {
     Meteor.subscribe('points');
     Meteor.subscribe('email');
@@ -111,11 +102,13 @@ if (Meteor.isClient) {
     },
     'click #time_flow_button': function(){
       if(Meteor.user())
-      controller = Meteor.setInterval(updater, 1000);
+      Meteor.call('live_updater', Meteor.userId(), Meteor.user().points);
+      $('#time_flow_button').attr("disabled", true);
     },
     'click #stop_button': function(){
       if(Meteor.user())
-      Meteor.clearInterval(controller);
+      Meteor.call('stop_clicked');
+      $('#time_flow_button').attr("disabled", false);
     }  
   });
 
@@ -128,6 +121,19 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+
+  var controller;
+  var user_id;
+  var points;
+  var click_check = false;
+  var updater = function(){
+    var current_points = points;
+    var points_minus_one = current_points - 1;
+    if(current_points >= 1){
+      Meteor.users.update(user_id, {$set: {points: current_points}});
+      points -= 1;
+    }
+  };
 
   Accounts.onCreateUser(function(options, user) {
        if(!options || !user) {
@@ -153,6 +159,18 @@ if (Meteor.isServer) {
     },
     update_points_in_db: function(x){
       Meteor.users.update(Meteor.userId(), {$set: {points: x}});
+    },
+    live_updater: function(u, p){
+      user_id = u;
+      points = p;
+      if(click_check === false){
+        controller = Meteor.setInterval(updater, 1000);
+        click_check = true;
+      }
+    },
+    stop_clicked: function(){
+      Meteor.clearInterval(controller);
+      click_check = false;
     }    
   });
 
