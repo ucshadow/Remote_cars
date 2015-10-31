@@ -52,6 +52,7 @@ if (Meteor.isClient) {
   });
 
   var c;
+  var d;
   var u = function(){
     // Server code
     if(Meteor.user().username === 'carnumber1'){
@@ -124,12 +125,13 @@ if (Meteor.isClient) {
       transform: scale(-1, 1); filter: FlipH;";
     }
   };
+
   var v = function(){
     // Server code
     if(Meteor.user().username === 'carnumber2'){
       var webrtc = new SimpleWebRTC({
-        localVideoEl: 'localVideo',
-        remoteVideosEl: 'remotesVideos',
+        localVideoEl: 'localVideo2',
+        remoteVideosEl: 'remotesVideos2',
         autoRequestMedia: true
       });
       console.log(webrtc);
@@ -175,23 +177,23 @@ if (Meteor.isClient) {
              webrtc.sendDirectlyToAll('text chat', 'chat-to-car2', 'Nothing Pressed');
           }
       });
-      $('#localVideo').remove();
+      $('#localVideo2').remove();
       var webrtc = new SimpleWebRTC({
-        remoteVideosEl: 'remotesVideos',
+        remoteVideosEl: 'remotesVideos2',
         autoRequestMedia: false
       });
       
       webrtc.joinRoom('carnumber2');
       webrtc.on('videoAdded', function(){
-        var len = $('#remotesVideos').children().length;
+        var len = $('#remotesVideos2').children().length;
         if(len > 1){
           for(var x = 1; x < len; x++){
-            $('#remotesVideos').children()[x].remove()
+            $('#remotesVideos2').children()[x].remove()
           }
         }
       });
 
-      remotesVideos.style.cssText = "-moz-transform: scale(-1, 1); \
+      remotesVideos2.style.cssText = "-moz-transform: scale(-1, 1); \
       -webkit-transform: scale(-1, 1); -o-transform: scale(-1, 1); \
       transform: scale(-1, 1); filter: FlipH;";
     }
@@ -260,7 +262,7 @@ if (Meteor.isClient) {
     },
     'click #start_button': function(){
       if(Meteor.user()){
-        var current_car = Session.get('view');
+        var current_car = 'carnumber1';
         if(Status.find({name: current_car}).fetch()[0]._is === 'idle'){
           Meteor.call('set_status_busy', current_car, Meteor.user().username);
           Meteor.call('live_updater', Meteor.userId(), Meteor.user().points);
@@ -268,29 +270,12 @@ if (Meteor.isClient) {
       }
     },
     'click #stop_button': function(){
-      if(Status.find({name: Session.get('view')}).fetch()[0].by === Meteor.user().username){
+      if(Status.find({name: 'carnumber1'}).fetch()[0].by === Meteor.user().username){
         Meteor.call('stop_clicked');
-        Meteor.call('set_status_idle', Session.get('view'));
+        Meteor.call('set_status_idle', 'carnumber1');
         $('#start_button').attr("disabled", false);
       }
-    }  ,
-    'click #car1': function(){
-      Session.set('view', 'carnumber1');
-    },
-    'click #car2': function(){
-      Session.set('view', 'carnumber2');
     }
-  });
-
-    Template.live.helpers({
-    user: function(){
-      if(Meteor.user())
-      return Meteor.user().username;
-    },
-    live_points: function(){
-      if(Meteor.user())
-      return Meteor.user().points;
-    },
   });
 
   Template.live1.events({
@@ -300,7 +285,7 @@ if (Meteor.isClient) {
     },
     'click #start_button': function(){
       if(Meteor.user()){
-        var current_car = Session.get('view');
+        var current_car = 'carnumber2';
         if(Status.find({name: current_car}).fetch()[0]._is === 'idle'){
           Meteor.call('set_status_busy', current_car, Meteor.user().username);
           Meteor.call('live_updater', Meteor.userId(), Meteor.user().points);
@@ -308,16 +293,10 @@ if (Meteor.isClient) {
       }
     },
     'click #stop_button': function(){
-      if(Status.find({name: Session.get('view')}).fetch()[0].by === Meteor.user().username)
+      if(Status.find({name: 'carnumber2'}).fetch()[0].by === Meteor.user().username)
       Meteor.call('stop_clicked');
-      Meteor.call('set_status_idle', Session.get('view'));
+      Meteor.call('set_status_idle', 'carnumber2');
       $('#start_button').attr("disabled", false);
-    }  ,
-    'click #car1': function(){
-      Session.set('view', 'carnumber1');
-    },
-    'click #car2': function(){
-      Session.set('view', 'carnumber2');
     }
   });
 
@@ -334,12 +313,12 @@ if (Meteor.isClient) {
 
   Template.container.onRendered(function(){
     this.subscribe("cars");
-    if(window.location.pathname === '/live'){
-      c = Meteor.setTimeout(u, 1000);
-    } else {
-      c = Meteor.setTimeout(v, 1000);
-    }
+    c = Meteor.setTimeout(u, 1000);
+  });
 
+  Template.container2.onRendered(function(){
+    this.subscribe("cars");
+    d = Meteor.setTimeout(v, 1000);
   });
 
   Template.status_bar.onCreated(function () {
@@ -348,10 +327,15 @@ if (Meteor.isClient) {
 
   Template.status_bar.helpers({
       status: function(){
-        var current_car = Session.get('view');
+        var current_car = '';
+        if(window.location.pathname === '/live'){
+          current_car = 'carnumber1';
+        } else {
+          current_car = 'carnumber2';
+        }
         var current_status = Status.findOne({name: current_car})._is;
         if(current_status === 'idle'){
-          return Session.get('view') + ' is available';
+          return current_car + ' is available';
         } else {
           return 'User --> ' + Status.findOne({name: current_car}).by + ' is controlling ' + current_car;
       }

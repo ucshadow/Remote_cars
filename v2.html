@@ -67,7 +67,7 @@
     <a href="{{ pathFor route='live' }}"><div class="car" id="car1"></div></a>
     <a href="{{ pathFor route='live1' }}"><div class="car" id="car2"></div></a>
   </div>
-  <div class="video_container">{{ >container }}</div>
+  <div class="video_container">{{ >container2 }}</div>
 </template>
 
 <!-- Login template -->
@@ -107,8 +107,8 @@
 <template name="container2">
 <p>{{ selected_car }}</p>
 <p id="live">---</p>
-        <video height="300" id="localVideo"></video>
-        <div id="remotesVideos"></div>
+        <video height="300" id="localVideo2"></video>
+        <div id="remotesVideos2"></div>
 </template>
 
 <template name="status_bar">
