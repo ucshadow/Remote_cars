@@ -38,15 +38,36 @@
     {{ else }}
       <p id="live_greeting_text">Loading data, please wait...</p>
     {{ /if }}
-    	<button id="time_flow_button">Start</button>
+	  <button id="start_button">Start</button>
       <button id="stop_button">Stop</button>
       <button id="add_100">Add 100</button>
+      {{ >status_bar }}
   </div>
   <div class="cars_div">
-    <a href="#"><div class="car" id="car1"></div></a>
-    <a href="#"><div class="car" id="car2"></div></a>
+    <a href="{{ pathFor route='live' }}"><div class="car" id="car1"></div></a>
+    <a href="{{ pathFor route='live1' }}"><div class="car" id="car2"></div></a>
   </div>
-  <div class="video_container"></div>
+  <div class="video_container">{{ >container }}</div>
+</template>
+
+<template name="live1">
+  <div class="stuff_container">
+    <p>Hello from live</p>
+    {{ #if Template.subscriptionsReady }}
+      <p id="live_greeting_text">Hello {{ user }}, you have <span id="time_left"> {{ live_points }} </span> seconds left</p>
+    {{ else }}
+      <p id="live_greeting_text">Loading data, please wait...</p>
+    {{ /if }}
+    <button id="start_button">Start</button>
+      <button id="stop_button">Stop</button>
+      <button id="add_100">Add 100</button>
+      {{ >status_bar }}
+  </div>
+  <div class="cars_div">
+    <a href="{{ pathFor route='live' }}"><div class="car" id="car1"></div></a>
+    <a href="{{ pathFor route='live1' }}"><div class="car" id="car2"></div></a>
+  </div>
+  <div class="video_container">{{ >container }}</div>
 </template>
 
 <!-- Login template -->
@@ -74,5 +95,35 @@
 <!-- Shop template -->
 <template name="buy_points">
 <p>This is buy page</p>
+</template>
+
+<template name="container">
+<p>{{ selected_car }}</p>
+<p id="live">---</p>
+        <video height="300" id="localVideo"></video>
+        <div id="remotesVideos"></div>
+</template>
+
+<template name="container2">
+<p>{{ selected_car }}</p>
+<p id="live">---</p>
+        <video height="300" id="localVideo"></video>
+        <div id="remotesVideos"></div>
+</template>
+
+<template name="status_bar">
+{{ button_take_control }}
+{{#if Template.subscriptionsReady}}
+	{{ status }}
+	{{ time_left }}
+{{ else }}
+	Loading...
+{{ /if }}
+</template>
+
+<template name="wrtc">
+<p>This is wrtc page</p>
+        <video height="300" id="localVideo"></video>
+        <div id="remotesVideos"></div>
 </template>
 
